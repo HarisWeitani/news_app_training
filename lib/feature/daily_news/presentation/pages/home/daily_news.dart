@@ -4,6 +4,7 @@ import 'package:news_app_training/feature/daily_news/presentation/bloc/article/r
 import 'package:news_app_training/feature/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
 
 class DailyNews extends StatelessWidget {
@@ -12,23 +13,32 @@ class DailyNews extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppbar(context),
       body: _buildBody(),
     );
   }
 
-  _buildAppBar() {
+  _buildAppbar(BuildContext context) {
     return AppBar(
       title: const Text(
-        "Daily news",
+        'Daily News',
         style: TextStyle(color: Colors.black),
       ),
+      actions: [
+        GestureDetector(
+          onTap: () => _onShowSavedArticlesViewTapped(context),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14),
+            child: Icon(Icons.bookmark, color: Colors.black),
+          ),
+        ),
+      ],
     );
   }
 
   _buildBody() {
     return BlocBuilder<RemoteArticlesBloc, RemoteArticleState>(
-      builder: (context, state) {
+      builder: (_, state) {
         if (state is RemoteArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
         }
@@ -38,11 +48,10 @@ class DailyNews extends StatelessWidget {
         if (state is RemoteArticlesDone) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              // return ListTile(
-              //   title: Text('$index'),
-              // );
               return ArticleWidget(
-                article: state.articles?[index],
+                article: state.articles![index],
+                onArticlePressed: (article) =>
+                    _onArticlePressed(context, article),
               );
             },
             itemCount: state.articles!.length,
@@ -51,5 +60,13 @@ class DailyNews extends StatelessWidget {
         return const SizedBox();
       },
     );
+  }
+
+  void _onArticlePressed(BuildContext context, ArticleEntity article) {
+    Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
+  }
+
+  void _onShowSavedArticlesViewTapped(BuildContext context) {
+    Navigator.pushNamed(context, '/SavedArticles');
   }
 }
