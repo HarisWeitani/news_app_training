@@ -3,6 +3,13 @@ import 'package:news_app_training/feature/daily_news/domain/entities/article.dar
 
 abstract class ArticleRepository {
 
+  //Remote
   Future<DataState<List<ArticleEntity>>> getNewsArticle();
+
+  //Local
+  Future<void> saveArticle(ArticleEntity articleEntity);
+  Future<void> removeArticle(ArticleEntity articleEntity);
+
+  Future<List<ArticleEntity>> getSavedArticle();
 
 }
